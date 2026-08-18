@@ -1,18 +1,26 @@
-# Week 01 — Linux & Development Environment
+# Day 02 — Python Fundamentals
 
-This week focuses on building the foundation for AI Infrastructure and Cloud Engineering.
+## Topics
 
-## Topics Covered
+- Variables
+- Integers
+- Floats
+- Strings
+- Booleans
+- None
+- Operators
+- print()
+- input()
 
-- WSL2 & Ubuntu setup
-- Linux command line basics
-- File system navigation
-- Git and GitHub workflow
-- Development environment preparation
+## Exercises
 
-## Goals
-
-- Become comfortable with Linux terminal
-- Understand basic Linux commands
-- Build a professional GitHub workflow
-- Prepare the environment for Docker and Cloud Engineering
+1. Celsius to Fahrenheit
+2. Age Calculator
+3. BMI Calculator
+4. Average Calculator
+5. Discount Calculator
+6. Seconds Converter
+7. Profit Calculator
+8. Unit Converter
+9. Area Calculator
+10. Salary Calculator
