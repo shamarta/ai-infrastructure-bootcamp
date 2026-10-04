@@ -1,0 +1,56 @@
+class Node:
+    def __init__(self, node_id, status, cpu_usage):
+        self.id = node_id
+        self.status = status
+        self.cpu_usage = cpu_usage
+
+    def is_overloaded(self, threshold=80):
+        return self.status == "active" and self.cpu_usage > threshold
+
+    def __str__(self):
+        return f"Node({self.id}, {self.status}, {self.cpu_usage}%)"
+
+
+class Cluster:
+    def __init__(self, name, region):
+        self.name = name
+        self.region = region
+        self.nodes = []
+
+    def add_node(self, node):
+        self.nodes.append(node)
+
+    def active_node_count(self):
+        return len([n for n in self.nodes if n.status == "active"])
+
+    def overloaded_nodes(self, threshold=80):
+        return [n for n in self.nodes if n.is_overloaded(threshold)]
+
+    def average_cpu_usage(self):
+        active = [n.cpu_usage for n in self.nodes if n.status == "active"]
+        if not active:
+            return None
+        return sum(active) / len(active)
+
+    def print_report(self):
+        print(f"📦 Cluster: {self.name} ({self.region})")
+        print(f"🖥️  Total nodes: {len(self.nodes)}")
+        print(f"✅ Active nodes: {self.active_node_count()}")
+
+        avg = self.average_cpu_usage()
+        print(f"📊 Average active CPU: {avg:.1f}%" if avg is not None else "📊 Average active CPU: N/A")
+
+        overloaded = self.overloaded_nodes()
+        print(f"🚨 Overloaded nodes: {len(overloaded)}")
+        for node in overloaded:
+            print(f"   - {node}")
+
+
+if __name__ == "__main__":
+    cluster = Cluster("prod-cluster-1", "eu-west-1")
+    cluster.add_node(Node("node-1", "active", 45))
+    cluster.add_node(Node("node-2", "inactive", 0))
+    cluster.add_node(Node("node-3", "active", 88))
+    cluster.add_node(Node("node-4", "active", 92))
+
+    cluster.print_report()
