@@ -1,0 +1,36 @@
+name: week3-infra-inventory CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "week-03/week3_infra_inventory/**"
+      - ".github/workflows/week3-infra-inventory.yml"
+  pull_request:
+    paths:
+      - "week-03/week3_infra_inventory/**"
+
+defaults:
+  run:
+    working-directory: week-03/week3_infra_inventory
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: week-03/week3_infra_inventory/requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run tests
+        run: python -m pytest -v
+
+      - name: Smoke-test the CLI
+        run: PYTHONPATH=src python -m infra_inventory.cli
