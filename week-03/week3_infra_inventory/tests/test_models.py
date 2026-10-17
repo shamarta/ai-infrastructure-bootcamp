@@ -15,6 +15,11 @@ def test_invalid_status_is_rejected():
         Node("node-1", "exploded", 10)
 
 
+def test_empty_id_is_rejected():
+    with pytest.raises(ValueError, match="non-empty string"):
+        Node("", "active", 10)
+
+
 @pytest.mark.parametrize("bad_value", [-1, 101, 150])
 def test_cpu_out_of_range_is_rejected(bad_value):
     with pytest.raises(ValueError, match="between 0 and 100"):
@@ -72,6 +77,18 @@ def test_node_from_dict_does_not_mutate_input():
     data = {"id": "c", "type": "compute", "status": "active", "cpu_usage": 5}
     node_from_dict(data)
     assert "type" in data
+
+
+def test_node_from_dict_normalizes_case_and_validates_resources():
+    node = node_from_dict({"id": "c", "type": "Compute", "status": "ACTIVE", "cpu_usage": 5})
+    assert isinstance(node, ComputeNode)
+    assert node.status == "active"
+
+    with pytest.raises(ValueError, match="positive integer"):
+        ComputeNode("n", "active", 5, cpu_cores=0)
+
+    with pytest.raises(ValueError, match="positive integer"):
+        StorageNode("n", "active", 5, capacity_gb=0)
 
 
 def test_node_from_dict_unknown_type():

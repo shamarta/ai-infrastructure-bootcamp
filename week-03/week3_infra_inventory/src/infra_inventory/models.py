@@ -17,6 +17,11 @@ class Node:
     cpu_usage: float
 
     def __post_init__(self) -> None:
+        if not isinstance(self.id, str) or not self.id.strip():
+            raise ValueError("id must be a non-empty string")
+        if not isinstance(self.status, str):
+            raise TypeError("status must be a string")
+        self.status = self.status.lower()
         if self.status not in VALID_STATUSES:
             raise ValueError(f"status must be one of {VALID_STATUSES}, got {self.status!r}")
         if isinstance(self.cpu_usage, bool) or not isinstance(self.cpu_usage, (int, float)):
@@ -40,6 +45,12 @@ class ComputeNode(Node):
     cpu_cores: int = 2
     memory_gb: int = 8
 
+    def __post_init__(self) -> None:
+        super().__post_init__()
+        for name, value in (("cpu_cores", self.cpu_cores), ("memory_gb", self.memory_gb)):
+            if isinstance(value, bool) or not isinstance(value, int) or value <= 0:
+                raise ValueError(f"{name} must be a positive integer, got {value!r}")
+
     def resource_summary(self) -> str:
         return f"{self.cpu_cores} vCPUs, {self.memory_gb}GB RAM"
 
@@ -49,6 +60,11 @@ class StorageNode(Node):
     """A node whose main purpose is storing data."""
 
     capacity_gb: int = 100
+
+    def __post_init__(self) -> None:
+        super().__post_init__()
+        if isinstance(self.capacity_gb, bool) or not isinstance(self.capacity_gb, int) or self.capacity_gb <= 0:
+            raise ValueError(f"capacity_gb must be a positive integer, got {self.capacity_gb!r}")
 
     def resource_summary(self) -> str:
         return f"{self.capacity_gb}GB storage"
@@ -69,6 +85,8 @@ def node_from_dict(data: Dict[str, Any]) -> Node:
     """
     fields = dict(data)  # never mutate the caller's data
     node_type = fields.pop("type", "generic")
+    if isinstance(node_type, str):
+        node_type = node_type.lower()
     try:
         node_class = NODE_TYPES[node_type]
     except KeyError:
